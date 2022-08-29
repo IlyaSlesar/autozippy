@@ -1,0 +1,19 @@
+archives:
+  configs:
+    files:
+      - C:\Users\User\Documents\Configs
+    mode: tar
+    tar:
+      algo: xz
+      lvl: 9
+  English:
+    files:
+      - C:\Users\User\Documents\English
+    pass: 1234
+    mode: 7z
+    7z:
+      lvl: 0
+      crypt_h: true
+root: C:\Users\User\Documents
+timestamp: true
+outdir: C:\Users\User\Documents\Backups
