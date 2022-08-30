@@ -6,10 +6,10 @@ AutoZippy is an easy to use automatic (non-interactive) archival software, desig
 For creating archives built-in library tarfile and 3rd-party library py7zr are used.
 
 ### Limitations
-Currently AutoZippy supports only 7z and tar archives as 2 most popular formats. Tar archives currently do not support encryption due to a lack of non-interactive GnuPG assymetric encryption in python. Though, nothing prevents you from encrypting a tar archive inside a 7z one.
+Currently AutoZippy supports only 7z and tar archives as 2 most popular formats. Tar archives currently do not support encryption due to a lack of non-interactive GnuPG assymetric encryption in python. However, nothing prevents you from encrypting a tar archive inside a 7z one.
 
 ## YAML Preset
-YAML presets consist of archives and their settings. Every setting can be specified either on a file-wide level or overriden for specific archive with the notable exclusion of timestamps - they currently can onle be specified on a preset-wide level. Aside from universal settings, like output directory, every format has its own specific settings, like algorithms, header encryption and compression level.
+YAML presets consist of archives and their settings. Every setting can be specified either on a file-wide level or overriden for specific archive with the notable exclusion of timestamps - they currently can only be specified on a preset-wide level. Aside from universal settings, like output directory, every format has its own specific settings, like algorithms, header encryption and compression level.
 
 Archives and their settings are specified under `archives`. There they are listed by their filenames and each has to contain at least one file under its own `files` section. 
 
@@ -28,7 +28,7 @@ Example config is provided under filename example.yaml
 * `pass` - password
 
 #### File-wide Settings
-* `timestamp ` - (true/false) whether to add timestamp to a filename of the archive. False by default.
+* `timestamp` - (true/false) whether to add timestamp to a filename of the archive. False by default.
 * `custom_timestamp` - specify custom format for a timestamp. Default: %Y-%md-%d. See details [here](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)
 
 #### 7z Specific Settings
@@ -41,4 +41,4 @@ Example config is provided under filename example.yaml
 * `lvl` - **supported only with LZMA** - compression effort level
 
 ## Contributing
-Program is far from complete and all help is welcome. You may also report bugs or submite feature requests but I can't guarantee timely responses or fixes. 
+Program is far from complete and all help is welcome. You may also report bugs or submit feature requests but I can't guarantee timely responses or fixes. 
