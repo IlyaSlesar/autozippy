@@ -17,15 +17,15 @@ algos_7z = {
 
 def encrypt_7z(archive_name, files, password = None, sp_args = None):
     filters = list()
-    if 'algo' in sp_args:
+    if sp_args and 'algo' in sp_args:
         filters.append({'id': algos_7z[sp_args['algo']]})
     else:
         filters.append({'id': py7zr.FILTER_LZMA2})
-    if 'lvl' in sp_args:
+    if sp_args and 'lvl' in sp_args:
         filters[-1]['preset'] = sp_args['lvl']
 
     with py7zr.SevenZipFile(archive_name, 'w', password=str(password), filters=filters) as arch:
-        if 'crypt_h' in sp_args:
+        if sp_args and 'crypt_h' in sp_args:
             arch.set_encrypted_header(True)
         for file in files:
             if Path(file).is_dir():

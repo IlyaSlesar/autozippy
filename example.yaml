@@ -14,6 +14,10 @@ archives:
     7z:
       lvl: 0
       crypt_h: true
+  German:
+    files:
+      - C:\Users\User\Documents\German
+    mode: 7z
 root: C:\Users\User\Documents
 timestamp: true
 outdir: C:\Users\User\Documents\Backups
