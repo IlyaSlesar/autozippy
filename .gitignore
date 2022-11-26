@@ -1,3 +1,2 @@
-example
-venv
-.vscode
+.*
+test.yaml
