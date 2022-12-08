@@ -11,7 +11,7 @@ Currently AutoZippy supports only 7z and tar archives as 2 most popular formats.
 ## YAML Preset
 YAML presets consist of archives and their settings. Every setting can be specified either on a file-wide level or overriden for specific archive with the notable exclusion of timestamps - they currently can only be specified on a preset-wide level. Aside from universal settings, like output directory, every format has its own specific settings, like algorithms, header encryption and compression level.
 
-Archives and their settings are specified under `archives`. There they are listed by their filenames and each has to contain at least one file under its own `files` section. 
+Archives and their settings are specified under `archives`. There they are listed by their filenames and each has to contain at least one file under its own `files` section. If you want to backup all files from directory but not subdirectories you can specify '*' as a filename.
 
 ### Usage Examples
 > autozippy cloud.yaml photos.yaml example.yaml

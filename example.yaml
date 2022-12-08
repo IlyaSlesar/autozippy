@@ -18,6 +18,9 @@ archives:
     files:
       - C:\Users\User\Documents\German
     mode: 7z
+  Other_Docs:
+    files:
+      - C:\Users\User\Documents\*
 root: C:\Users\User\Documents
 timestamp: true
 outdir: C:\Users\User\Documents\Backups

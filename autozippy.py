@@ -28,7 +28,11 @@ def encrypt_7z(archive_name, files, password = None, sp_args = None):
         if sp_args and 'crypt_h' in sp_args:
             arch.set_encrypted_header(True)
         for file in files:
-            if Path(file).is_dir():
+            if Path(file).name == '*':
+                for sub_file in Path(file).parent.iterdir():
+                    if sub_file.is_file():
+                        arch.write(sub_file)
+            elif Path(file).is_dir():
                 arch.writeall(file)
             elif Path(file).exists():
                 arch.write(file)
@@ -48,7 +52,11 @@ def encrypt_tar(archive_name, files, password = None, sp_args = None):
     arch = tarfile.open(archive_name, mode=mode, preset=sp_args['lvl'] if 'lvl' in sp_args 
                                                         and sp_args['algo'] == 'xz' else None)
     for file in files:
-        if Path(file).exists():
+        if Path(file).name == '*':
+            for sub_file in Path(file).parent.iterdir():
+                if sub_file.is_file():
+                    arch.add(sub_file)
+        elif Path(file).exists():
             arch.add(file)
         else:
             raise RuntimeError(f'File {file} does not exist')
