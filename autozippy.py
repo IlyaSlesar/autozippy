@@ -1,10 +1,11 @@
 import argparse
 from pathlib import Path
-import yaml
-import py7zr
 import tarfile
 import datetime
 import os
+import yaml
+import py7zr
+
 
 algos_7z = {
     'lzma2:': py7zr.FILTER_LZMA2,
@@ -61,7 +62,6 @@ def encrypt_tar(archive_name, files, password = None, sp_args = None):
         else:
             raise RuntimeError(f'File {file} does not exist')
     arch.close()
-    
 
 
 def process_preset(preset):
@@ -75,36 +75,36 @@ def process_preset(preset):
             mode = preset['mode']
         else:
             raise RuntimeError('Archival mode not specified')
-        
+
         if 'pass' in archive:
             password = archive['pass']
         elif 'pass' in preset:
             password = preset['pass']
         else:
             password = None
-        
+
         if 'outdir' in archive:
             archive_path = Path(archive['outdir'], archive_path)
         elif 'outdir' in preset:
             archive_path = Path(preset['outdir'], archive_path)
-        
+
         if 'root' in archive:
             t_dir = os.getcwd()
             os.chdir(archive['root'])
-            archive['files'] = map(lambda path: Path(path).relative_to(os.getcwd()), archive['files'])
+            archive['files'] = map(lambda path: Path(Path.resolve(Path(path).parent).relative_to(os.getcwd()), Path(path).name), archive['files'])
         elif 'root' in preset:
             t_dir = os.getcwd()
             os.chdir(preset['root'])
-            archive['files'] = map(lambda path: Path(path).relative_to(os.getcwd()), archive['files'])
+            archive['files'] = map(lambda path: Path(Path.resolve(Path(path).parent).relative_to(os.getcwd()), Path(path).name), archive['files'])
 
         if 'timestamp' in preset:
             if 'custom_timestamp' in preset and preset['custom_timestamp']:
-                archive_path = archive_path.with_name({archive_path.name} + ' ' + 
+                archive_path = archive_path.with_name({archive_path.name} + ' ' +
                                                       {datetime.datetime.now().strftime(preset['custom_timestamp'])})
             else:
                 archive_path = archive_path.with_name(archive_path.name + ' ' +
                                                       datetime.datetime.now().strftime('%Y-%m-%d'))
-        
+
         if mode == '7z':
             encrypt_7z(archive_path.with_suffix('.7z'), archive['files'],
                        password=password, sp_args=archive['7z'] if '7z' in archive
