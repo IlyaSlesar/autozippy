@@ -16,7 +16,7 @@ Archives and their settings are specified under `archives`. There they are liste
 ### Usage Examples
 > autozippy cloud.yaml photos.yaml example.yaml
 
-As many configs as you want can be provided. No other options are supported.
+As many configs as you want can be provided. `-v`/`--verbose` can be provided for debugging information and time per preset.
 
 Example config is provided under filename example.yaml 
 

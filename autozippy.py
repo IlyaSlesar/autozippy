@@ -151,14 +151,18 @@ def main():
     parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
 
-    global tic
-    tic = time.perf_counter()
     global verbose
     verbose = args.verbose
+    
+        
     for preset in args.preset:
+        if verbose:
+            tic = time.perf_counter()
         with open(preset, 'r') as f:
             process_preset(yaml.safe_load(f))
-    print(time.perf_counter() - tic)
+        if verbose:
+            print(time.perf_counter() - tic)
+    
     
 
 main()
