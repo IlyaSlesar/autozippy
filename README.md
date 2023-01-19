@@ -35,6 +35,7 @@ Example config is provided under filename example.yaml
 * `algo` - compression algorithm. Can be either `lzma2`, `lzma`, `bzip2`, `ppmd`, `deflate` or `store` if no compression needed. LZMA2 by default.
 * `lvl` - **supported only with LZMA2** - compression effort level
 * `crypt_h` - **can only be used if pass is specified** - whether to encrypt file headers (names of files inside of the archive)
+* `native` - whether to use 7z program installed on your computer instead of python library. **The only way to enable multi-threading**. Requires 7z in your PATH.
 
 #### TAR Specific Settings
 * `algo` - compression algorithm. Can be either `xz` (lzma), `gz` (gunzip) or `bz2` (bzip2). No compression by default.

@@ -1,11 +1,12 @@
 import argparse
+import subprocess
 from pathlib import Path
 import tarfile
 import datetime
 import os
+import time
 import yaml
 import py7zr
-
 
 algos_7z = {
     'lzma2:': py7zr.FILTER_LZMA2,
@@ -16,32 +17,53 @@ algos_7z = {
     'copy': py7zr.FILTER_COPY
 }
 
+verbose = False
+
 def encrypt_7z(archive_name, files, password = None, sp_args = None):
     filters = list()
+    if verbose:
+        print('Encrypt 7z', archive_name, list(files), password, sp_args)
     if sp_args and 'algo' in sp_args:
         filters.append({'id': algos_7z[sp_args['algo']]})
     else:
         filters.append({'id': py7zr.FILTER_LZMA2})
     if sp_args and 'lvl' in sp_args:
         filters[-1]['preset'] = sp_args['lvl']
-
-    with py7zr.SevenZipFile(archive_name, 'w', password=str(password), filters=filters) as arch:
-        if sp_args and 'crypt_h' in sp_args:
-            arch.set_encrypted_header(True)
-        for file in files:
-            if Path(file).name == '*':
-                for sub_file in Path(file).parent.iterdir():
-                    if sub_file.is_file():
-                        arch.write(sub_file)
-            elif Path(file).is_dir():
-                arch.writeall(file)
-            elif Path(file).exists():
-                arch.write(file)
-            else:
-                raise RuntimeError(f'File {file} does not exist')
+    
+    if sp_args and 'native' in sp_args:
+        args = ['7z', 'a']
+        if password:
+            args.append('-p' + password)
+        if 'crypt_h' in sp_args:
+            args.append('-mhe=on')
+        if 'lvl' in sp_args:
+            args.append('-mx=' + str(sp_args['lvl']))
+        args.extend([archive_name] + files)
+        if verbose:
+            print('7Z Args:', args)
+            subprocess.run(args)
+        else:
+            subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    else:
+        with py7zr.SevenZipFile(archive_name, 'w', password=str(password), filters=filters) as arch:
+            if sp_args and 'crypt_h' in sp_args:
+                arch.set_encrypted_header(True)
+            for file in files:
+                if Path(file).name == '*':
+                    for sub_file in Path(file).parent.iterdir():
+                        if sub_file.is_file():
+                            arch.write(sub_file)
+                elif Path(file).is_dir():
+                    arch.writeall(file)
+                elif Path(file).exists():
+                    arch.write(file)
+                else:
+                    raise RuntimeError(f'File {file} does not exist')
 
 
 def encrypt_tar(archive_name, files, password = None, sp_args = None):
+    if verbose:
+        print('Encrypt TAR', archive_name, list(files), password, sp_args)
     if 'algo' in sp_args:
         if sp_args['algo'] == 'lzma':
             sp_args['algo'] = 'xz'
@@ -84,18 +106,18 @@ def process_preset(preset):
             password = None
 
         if 'outdir' in archive:
-            archive_path = Path(archive['outdir'], archive_path)
+            archive_path = Path(Path(archive['outdir']).resolve(), archive_path)
         elif 'outdir' in preset:
-            archive_path = Path(preset['outdir'], archive_path)
+            archive_path = Path(Path(preset['outdir']).resolve(), archive_path)
 
         if 'root' in archive:
             t_dir = os.getcwd()
             os.chdir(archive['root'])
-            archive['files'] = map(lambda path: Path(Path.resolve(Path(path).parent).relative_to(os.getcwd()), Path(path).name), archive['files'])
+            archive['files'] = list(map(lambda path: Path(Path.resolve(Path(path).parent).relative_to(os.getcwd()), Path(path).name), archive['files']))
         elif 'root' in preset:
             t_dir = os.getcwd()
             os.chdir(preset['root'])
-            archive['files'] = map(lambda path: Path(Path.resolve(Path(path).parent).relative_to(os.getcwd()), Path(path).name), archive['files'])
+            archive['files'] = list(map(lambda path: Path(Path.resolve(Path(path).parent).relative_to(os.getcwd()), Path(path).name), archive['files']))
 
         if 'timestamp' in preset:
             if 'custom_timestamp' in preset and preset['custom_timestamp']:
@@ -126,11 +148,17 @@ def process_preset(preset):
 def main():
     parser = argparse.ArgumentParser(description='Create archives as described in YAML preset')
     parser.add_argument('preset', nargs='+')
+    parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
 
+    global tic
+    tic = time.perf_counter()
+    global verbose
+    verbose = args.verbose
     for preset in args.preset:
         with open(preset, 'r') as f:
             process_preset(yaml.safe_load(f))
+    print(time.perf_counter() - tic)
     
 
 main()
